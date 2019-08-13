@@ -2,6 +2,8 @@
 from appium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import time, os
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from readConfig import ReadConfig
 
 
@@ -13,16 +15,16 @@ def login():
                     'noReset': True,
                     'browserName': 'Chrome'
                     }
-    driver = webdriver.Remote('http://127.0.0.1:4723/wd/hub', desired_caps)
+    try:
+        driver = webdriver.Remote('http://127.0.0.1:4723/wd/hub', desired_caps)
+        print("Appium 连接成功！")
+    except Exception as e:
+        print("Appium 连接失败！")
+        print(e)
+        exit()
     print('浏览器启动成功')
 
     driver.get(ReadConfig().get_root_url())
-    print(driver.contexts)
-    driver.switch_to.context('NATIVE_APP')
-    print('切换到原始APP成功')
-
-    driver.switch_to.context('CHROMIUM')
-    print('切换到CHROMIUM成功')
     driver.find_element_by_id("appLogin").click()
     driver.find_element_by_xpath("//div[@class='login-item']/a[2]").click()
     # 输入账号密码
@@ -30,6 +32,7 @@ def login():
     driver.find_element_by_id("tb_password").send_keys(password)
 
     driver.find_element_by_xpath("//div[@class='submit']").click()
+    print("登陆成功")
     return driver
 
 
